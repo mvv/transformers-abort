@@ -13,6 +13,7 @@ module Control.Monad.Trans.Abort (
     recover
   ) where
 
+import Data.Pointed
 import Data.Functor.Identity
 import Data.Functor.Alt
 import Data.Functor.Plus
@@ -35,6 +36,9 @@ type Abort e α = AbortT e Identity α
 
 runAbort ∷ Abort e α → Either e α
 runAbort = runIdentity . runAbortT
+
+instance Monad μ ⇒ Pointed (AbortT e μ) where
+  point = AbortT . return . Right
 
 instance Functor μ ⇒ Functor (AbortT e μ) where
   fmap f = AbortT . fmap (fmap f) . runAbortT
