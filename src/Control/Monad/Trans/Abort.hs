@@ -6,9 +6,7 @@
 module Control.Monad.Trans.Abort (
     Abort,
     runAbort,
-    runAbort',
     AbortT(..),
-    runAbortT',
     abort,
     recover
   ) where
@@ -96,12 +94,6 @@ instance MonadControlIO μ ⇒ MonadControlIO (AbortT e μ) where
 
 instance Monad μ ⇒ Failure e (AbortT e μ) where
   failure = abort
-
-runAbortT' ∷ Monad μ ⇒ AbortT α μ α → μ α
-runAbortT' m = runAbortT m >>= return . either id id
-
-runAbort' ∷ Abort α α → α
-runAbort' = runIdentity . runAbortT'
 
 abort ∷ Monad μ ⇒ e → AbortT e μ α
 abort = AbortT . return . Left

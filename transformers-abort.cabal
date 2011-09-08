@@ -1,5 +1,5 @@
 Name: transformers-abort
-Version: 0.1
+Version: 0.2
 Category: Control
 Stability: experimental
 Synopsis: A better error monad transformer
@@ -37,4 +37,5 @@ Library
   GHC-Options: -Wall
   Exposed-Modules:
     Control.Monad.Trans.Abort
+    Control.Monad.Trans.Finish
 
