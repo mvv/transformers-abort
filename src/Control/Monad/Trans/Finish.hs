@@ -19,6 +19,7 @@ import Data.Functor.Bind.Trans
 import Control.Applicative
 import Control.Monad (ap)
 import Control.Monad.Base
+import Control.Monad.Base.Control
 import Control.Monad.Fix
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Control
@@ -74,6 +75,9 @@ instance MonadTransControl (FinishT f) where
 
 instance MonadControlIO μ ⇒ MonadControlIO (FinishT f μ) where
   liftControlIO = liftLiftControlBase liftControlIO
+
+instance MonadBaseControl μ η ⇒ MonadBaseControl (FinishT f μ) η where
+  liftBaseControl = liftLiftControlBase liftBaseControl
 
 runFinishT' ∷ Monad μ ⇒ FinishT α μ α → μ α
 runFinishT' m = runFinishT m >>= return . either id id

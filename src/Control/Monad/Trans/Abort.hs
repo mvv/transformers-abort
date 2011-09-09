@@ -21,6 +21,7 @@ import Data.Default
 import Control.Applicative
 import Control.Monad (ap, MonadPlus(..))
 import Control.Monad.Base
+import Control.Monad.Base.Control
 import Control.Monad.Fix
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Control
@@ -91,6 +92,9 @@ instance MonadTransControl (AbortT e) where
 
 instance MonadControlIO μ ⇒ MonadControlIO (AbortT e μ) where
   liftControlIO = liftLiftControlBase liftControlIO
+
+instance MonadBaseControl μ η ⇒ MonadBaseControl (AbortT e μ) η where
+  liftBaseControl = liftLiftControlBase liftBaseControl
 
 instance Monad μ ⇒ Failure e (AbortT e μ) where
   failure = abort

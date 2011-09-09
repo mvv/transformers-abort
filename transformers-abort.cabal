@@ -27,7 +27,7 @@ Library
   Build-Depends:
     base              >= 4 && < 5,
     transformers      >= 0.2,
-    transformers-base >= 0.1,
+    transformers-base >= 0.2,
     semigroupoids     >= 1.2,
     pointed           >= 2.0.1,
     data-default      >= 0.2,
