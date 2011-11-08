@@ -61,7 +61,7 @@ instance MonadFix μ ⇒ MonadFix (FinishT f μ) where
 instance MonadIO μ ⇒ MonadIO (FinishT f μ) where
   liftIO = lift . liftIO
 
-instance MonadBase μ η ⇒ MonadBase (FinishT f μ) η where
+instance MonadBase η μ ⇒ MonadBase η (FinishT f μ) where
   liftBase = lift . liftBase
 
 instance BindTrans (FinishT f) where
@@ -76,7 +76,7 @@ instance MonadTransControl (FinishT f) where
 instance MonadControlIO μ ⇒ MonadControlIO (FinishT f μ) where
   liftControlIO = liftLiftControlBase liftControlIO
 
-instance MonadBaseControl μ η ⇒ MonadBaseControl (FinishT f μ) η where
+instance MonadBaseControl η μ ⇒ MonadBaseControl η (FinishT f μ) where
   liftBaseControl = liftLiftControlBase liftBaseControl
 
 runFinishT' ∷ Monad μ ⇒ FinishT α μ α → μ α

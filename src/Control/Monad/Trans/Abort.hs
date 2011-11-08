@@ -78,7 +78,7 @@ instance MonadFix μ ⇒ MonadFix (AbortT e μ) where
 instance MonadIO μ ⇒ MonadIO (AbortT e μ) where
   liftIO = lift . liftIO
 
-instance MonadBase μ η ⇒ MonadBase (AbortT e μ) η where
+instance MonadBase η μ ⇒ MonadBase η (AbortT e μ) where
   liftBase = lift . liftBase
 
 instance BindTrans (AbortT e) where
@@ -93,7 +93,7 @@ instance MonadTransControl (AbortT e) where
 instance MonadControlIO μ ⇒ MonadControlIO (AbortT e μ) where
   liftControlIO = liftLiftControlBase liftControlIO
 
-instance MonadBaseControl μ η ⇒ MonadBaseControl (AbortT e μ) η where
+instance MonadBaseControl η μ ⇒ MonadBaseControl η (AbortT e μ) where
   liftBaseControl = liftLiftControlBase liftBaseControl
 
 instance Monad μ ⇒ Failure e (AbortT e μ) where
