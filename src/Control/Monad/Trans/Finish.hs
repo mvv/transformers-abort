@@ -77,8 +77,8 @@ instance MonadTransControl (FinishT f) where
 instance MonadBaseControl η μ ⇒ MonadBaseControl η (FinishT e μ) where
   newtype StM (FinishT e μ) α = StMFinish (ComposeSt (FinishT e) μ α)
   liftBaseControl = liftBaseControlDefault StMFinish
-  restore (StMFinish stBase) = FinishT $
-    restore stBase >>= runFinishT . restoreT
+  restoreM (StMFinish stBase) = FinishT $
+    restoreM stBase >>= runFinishT . restoreT
 
 runFinishT' ∷ Monad μ ⇒ FinishT α μ α → μ α
 runFinishT' m = runFinishT m >>= return . either id id

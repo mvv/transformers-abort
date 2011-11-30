@@ -94,7 +94,8 @@ instance MonadTransControl (AbortT e) where
 instance MonadBaseControl η μ ⇒ MonadBaseControl η (AbortT e μ) where
   newtype StM (AbortT e μ) α = StMAbort (ComposeSt (AbortT e) μ α)
   liftBaseControl = liftBaseControlDefault StMAbort
-  restore (StMAbort stBase) = AbortT $ restore stBase >>= runAbortT . restoreT
+  restoreM (StMAbort stBase) = AbortT $
+    restoreM stBase >>= runAbortT . restoreT
 
 instance Monad μ ⇒ Failure e (AbortT e μ) where
   failure = abort
