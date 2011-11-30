@@ -1,4 +1,5 @@
 {-# LANGUAGE UnicodeSyntax #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -17,14 +18,12 @@ import Data.Functor.Identity
 import Data.Functor.Bind
 import Data.Functor.Bind.Trans
 import Control.Applicative
-import Control.Monad (ap)
+import Control.Monad (liftM, ap)
 import Control.Monad.Base
-import Control.Monad.Base.Control
 import Control.Monad.Fix
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Control
 import Control.Monad.IO.Class
-import Control.Monad.IO.Control
 
 newtype FinishT f μ α = FinishT { runFinishT ∷ μ (Either f α) }
 
@@ -71,13 +70,15 @@ instance MonadTrans (FinishT f) where
   lift = FinishT . ap (return Right)
 
 instance MonadTransControl (FinishT f) where
-  liftControl f = lift $ f $ (return . FinishT . return =<<) . runFinishT
+  newtype StT (FinishT f) α = StFinish (Either f α)
+  liftControl f = lift $ f $ liftM StFinish . runFinishT
+  restoreT (StFinish e) = FinishT $ return e
 
-instance MonadControlIO μ ⇒ MonadControlIO (FinishT f μ) where
-  liftControlIO = liftLiftControlBase liftControlIO
-
-instance MonadBaseControl η μ ⇒ MonadBaseControl η (FinishT f μ) where
-  liftBaseControl = liftLiftControlBase liftBaseControl
+instance MonadBaseControl η μ ⇒ MonadBaseControl η (FinishT e μ) where
+  newtype StM (FinishT e μ) α = StMFinish (ComposeSt (FinishT e) μ α)
+  liftBaseControl = liftBaseControlDefault StMFinish
+  restore (StMFinish stBase) = FinishT $
+    restore stBase >>= runFinishT . restoreT
 
 runFinishT' ∷ Monad μ ⇒ FinishT α μ α → μ α
 runFinishT' m = runFinishT m >>= return . either id id

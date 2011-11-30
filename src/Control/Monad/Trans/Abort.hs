@@ -1,4 +1,5 @@
 {-# LANGUAGE UnicodeSyntax #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -19,14 +20,12 @@ import Data.Functor.Bind
 import Data.Functor.Bind.Trans
 import Data.Default
 import Control.Applicative
-import Control.Monad (ap, MonadPlus(..))
+import Control.Monad (liftM, ap, MonadPlus(..))
 import Control.Monad.Base
-import Control.Monad.Base.Control
 import Control.Monad.Fix
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Control
 import Control.Monad.IO.Class
-import Control.Monad.IO.Control
 import Control.Failure
 
 newtype AbortT e μ α = AbortT { runAbortT ∷ μ (Either e α) }
@@ -88,13 +87,14 @@ instance MonadTrans (AbortT e) where
   lift = AbortT . ap (return Right)
 
 instance MonadTransControl (AbortT e) where
-  liftControl f = lift $ f $ (return . AbortT . return =<<) . runAbortT
-
-instance MonadControlIO μ ⇒ MonadControlIO (AbortT e μ) where
-  liftControlIO = liftLiftControlBase liftControlIO
+  newtype StT (AbortT e) α = StAbort (Either e α)
+  liftControl f = lift $ f $ liftM StAbort . runAbortT
+  restoreT (StAbort e) = AbortT $ return e
 
 instance MonadBaseControl η μ ⇒ MonadBaseControl η (AbortT e μ) where
-  liftBaseControl = liftLiftControlBase liftBaseControl
+  newtype StM (AbortT e μ) α = StMAbort (ComposeSt (AbortT e) μ α)
+  liftBaseControl = liftBaseControlDefault StMAbort
+  restore (StMAbort stBase) = AbortT $ restore stBase >>= runAbortT . restoreT
 
 instance Monad μ ⇒ Failure e (AbortT e μ) where
   failure = abort
