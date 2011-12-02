@@ -87,15 +87,15 @@ instance MonadTrans (AbortT e) where
   lift = AbortT . ap (return Right)
 
 instance MonadTransControl (AbortT e) where
-  newtype StT (AbortT e) α = StAbort (Either e α)
-  liftControl f = lift $ f $ liftM StAbort . runAbortT
-  restoreT (StAbort e) = AbortT $ return e
+  newtype StT (AbortT e) α = StAbort { unStAbort ∷ Either e α }
+  liftWith f = lift $ f $ liftM StAbort . runAbortT
+  restoreT   = AbortT . liftM unStAbort
 
 instance MonadBaseControl η μ ⇒ MonadBaseControl η (AbortT e μ) where
-  newtype StM (AbortT e μ) α = StMAbort (ComposeSt (AbortT e) μ α)
-  liftBaseControl = liftBaseControlDefault StMAbort
-  restoreM (StMAbort stBase) = AbortT $
-    restoreM stBase >>= runAbortT . restoreT
+  newtype StM (AbortT e μ) α =
+    StMAbort { unStMAbort ∷ ComposeSt (AbortT e) μ α }
+  liftBaseWith = defaultLiftBaseWith StMAbort
+  restoreM     = defaultRestoreM unStMAbort
 
 instance Monad μ ⇒ Failure e (AbortT e μ) where
   failure = abort
