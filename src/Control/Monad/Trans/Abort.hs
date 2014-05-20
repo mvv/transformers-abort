@@ -18,7 +18,7 @@ import Data.Functor.Alt
 import Data.Functor.Plus
 import Data.Functor.Bind
 import Data.Functor.Bind.Trans
-import Data.Default
+import Data.Default.Class
 import Control.Applicative
 import Control.Monad (liftM, ap, MonadPlus(..))
 import Control.Monad.Base
@@ -26,7 +26,6 @@ import Control.Monad.Fix
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Control
 import Control.Monad.IO.Class
-import Control.Failure
 
 newtype AbortT e μ α = AbortT { runAbortT ∷ μ (Either e α) }
 
@@ -96,9 +95,6 @@ instance MonadBaseControl η μ ⇒ MonadBaseControl η (AbortT e μ) where
     StMAbort { unStMAbort ∷ ComposeSt (AbortT e) μ α }
   liftBaseWith = defaultLiftBaseWith StMAbort
   restoreM     = defaultRestoreM unStMAbort
-
-instance Monad μ ⇒ Failure e (AbortT e μ) where
-  failure = abort
 
 abort ∷ Monad μ ⇒ e → AbortT e μ α
 abort = AbortT . return . Left
