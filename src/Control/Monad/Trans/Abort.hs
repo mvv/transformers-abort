@@ -1,15 +1,16 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Control.Monad.Trans.Abort (
-    Abort,
-    runAbort,
-    AbortT(..),
-    abort,
-    recover
+module Control.Monad.Trans.Abort
+  ( Abort
+  , runAbort
+  , AbortT(..)
+  , abort
+  , recover
   ) where
 
 import Data.Pointed
@@ -20,7 +21,10 @@ import Data.Functor.Bind
 import Data.Functor.Bind.Trans
 import Data.Default.Class
 import Control.Applicative
-import Control.Monad (liftM, ap, MonadPlus(..))
+import Control.Monad (ap, MonadPlus(..))
+#if !MIN_VERSION_monad_control(1,0,0)
+import Control.Monad (liftM)
+#endif
 import Control.Monad.Base
 import Control.Monad.Fix
 import Control.Monad.Trans.Class
@@ -86,19 +90,30 @@ instance MonadTrans (AbortT e) where
   lift = AbortT . ap (return Right)
 
 instance MonadTransControl (AbortT e) where
+#if MIN_VERSION_monad_control(1,0,0)
+  type StT (AbortT e) α = Either e α
+  liftWith f = lift $ f $ runAbortT
+  restoreT   = AbortT
+#else
   newtype StT (AbortT e) α = StAbort { unStAbort ∷ Either e α }
   liftWith f = lift $ f $ liftM StAbort . runAbortT
   restoreT   = AbortT . liftM unStAbort
+#endif
 
 instance MonadBaseControl η μ ⇒ MonadBaseControl η (AbortT e μ) where
+#if MIN_VERSION_monad_control(1,0,0)
+  type StM (AbortT e μ) α = ComposeSt (AbortT e) μ α
+  liftBaseWith = defaultLiftBaseWith
+  restoreM     = defaultRestoreM
+#else
   newtype StM (AbortT e μ) α =
     StMAbort { unStMAbort ∷ ComposeSt (AbortT e) μ α }
   liftBaseWith = defaultLiftBaseWith StMAbort
   restoreM     = defaultRestoreM unStMAbort
+#endif
 
 abort ∷ Monad μ ⇒ e → AbortT e μ α
 abort = AbortT . return . Left
 
 recover ∷ Monad μ ⇒ AbortT e μ α → (e → AbortT e μ α) → AbortT e μ α
 recover m h = AbortT $ runAbortT m >>= either (runAbortT . h) (return . Right)
-
