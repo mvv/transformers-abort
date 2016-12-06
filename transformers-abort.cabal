@@ -2,17 +2,16 @@ Name: transformers-abort
 Version: 0.5.0.1
 Category: Control
 Stability: experimental
-Synopsis: A better error monad transformer
+Synopsis: Error and short-circuit monad transformers
 Description:
-  This package provides a better error monad transformer for
-  the @transformers@ package.
+  This package provides error and short-circuit monad transformers.
 
 Homepage: https://github.com/mvv/transformers-abort
 Bug-Reports: https://github.com/mvv/transformers-abort/issues
 
 Author: Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
 Maintainer: Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
-Copyright: 2011 Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+Copyright: 2011-2016 Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
 License: BSD3
 License-File: LICENSE
 
@@ -25,13 +24,12 @@ Source-Repository head
 
 Library
   Build-Depends:
-    base               >= 4 && < 5,
-    transformers       >= 0.2,
-    transformers-base  >= 0.4,
-    semigroupoids      >= 1.2,
-    pointed            >= 2.0.1,
-    data-default-class >= 0.0.1,
-    monad-control      >= 0.3
+    base              >= 4 && < 5,
+    transformers      >= 0.2,
+    transformers-base >= 0.4,
+    semigroupoids     >= 1.2,
+    pointed           >= 2.0.1,
+    monad-control     >= 0.3
   Hs-Source-Dirs: src
   GHC-Options: -Wall
   Exposed-Modules:
