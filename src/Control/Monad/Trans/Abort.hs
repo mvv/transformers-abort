@@ -14,6 +14,9 @@ module Control.Monad.Trans.Abort
   , runAbort
   ) where
 
+import Data.Monoid (mempty)
+import Data.Foldable (Foldable(..))
+import Data.Traversable (Traversable(..))
 import Data.Pointed
 import Data.Functor.Identity
 import Data.Functor.Bind
