@@ -175,6 +175,6 @@ type Finish f α = FinishT f Identity α
 runFinish ∷ Finish f α → Either f α
 runFinish = runIdentity . runFinishT
 
--- | 'runFinishT'' specialized to 'Finish'.
+-- | 'runFinishT'' specialized for 'Finish'.
 runFinish' ∷ Finish α α → α
 runFinish' = runIdentity . runFinishT'
