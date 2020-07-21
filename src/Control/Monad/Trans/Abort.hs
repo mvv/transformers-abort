@@ -110,9 +110,11 @@ instance (Functor μ, Monad μ) ⇒ Bind (AbortT e μ) where
 instance Monad μ ⇒ Monad (AbortT e μ) where
   return  = AbortT . return . Right
   m >>= f = AbortT $ runAbortT m >>= either (return . Left) (runAbortT . f)
+#if !MIN_VERSION_base(4,13,0)
   fail    = AbortT . fail
-
+#endif
 #if MIN_VERSION_base(4,9,0)
+
 instance Fail.MonadFail μ ⇒ Fail.MonadFail (AbortT f μ) where
   fail = AbortT . Fail.fail
 #endif
