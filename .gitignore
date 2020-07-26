@@ -2,5 +2,7 @@ cabal-dev
 cabal.sandbox.config
 stack.yaml
 dist
+dist-*
+*.local
 .*
 *~
