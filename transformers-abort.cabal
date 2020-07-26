@@ -29,6 +29,7 @@ Source-Repository head
   Location: https://github.com/mvv/transformers-abort.git
 
 Library
+  Default-Language: Haskell2010
   Build-Depends:
     base              >= 4 && < 5,
     transformers      >= 0.2,
