@@ -110,8 +110,8 @@ instance Monad μ ⇒ Monad (FinishT f μ) where
 #if !MIN_VERSION_base(4,13,0)
   fail    = FinishT . fail
 #endif
-#if MIN_VERSION_base(4,9,0)
 
+#if MIN_VERSION_base(4,9,0)
 instance Fail.MonadFail μ ⇒ Fail.MonadFail (FinishT f μ) where
   fail = FinishT . Fail.fail
 #endif
