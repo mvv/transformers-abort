@@ -1,5 +1,5 @@
 Name: transformers-abort
-Version: 0.6.0.1
+Version: 0.6.0.2
 Category: Control
 Stability: experimental
 Synopsis: Error and short-circuit monad transformers
@@ -19,7 +19,7 @@ Extra-Source-Files:
   README.md
 
 Tested-With: GHC==7.6.3, GHC==7.8.4, GHC==7.10.3, GHC==8.0.2, GHC==8.2.2,
-             GHC==8.4.4, GHC==8.6.1
+             GHC==8.4.4, GHC==8.6.1, GHC==8.8.3
 
 Cabal-Version: >= 1.6.0
 Build-Type: Simple
